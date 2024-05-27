@@ -1,25 +1,75 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { createContext, useEffect, useState } from 'react';
+import HomPage from './pages/homePage/index';
+import { IProduct } from './interface';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Products from './pages/productPage';
+
+
+
+const router = createBrowserRouter([
+
+
+  {
+
+    path: '/',
+    element: <HomPage title={''} price={0} images={''} id={0} />
+  },
+
+  {
+    path: '/Products',
+    element: <Products />,
+    children: [{
+      path: '/Products/1'
+    }]
+  }
+
+
+])
+
+export const proContext = createContext<any>(null)
+
+
 
 function App() {
+
+
+  const [productList, setProductList] = useState<IProduct[]>([])
+  useEffect(() => {
+
+    fetch('https://602bf8bf30ba7200172227a8.mockapi.io/products')
+      .then(res => res.json())
+      .then(result => setProductList(result))
+      .catch(err => console.log(err))
+
+    
+
+  }, [])
+
+
+
+
+
+
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <proContext.Provider value={{productList : productList , setProductList:setProductList} }>
+        {/* <RouterProvider router={router} /> */}
+      </proContext.Provider>
+      {productList.map(item => <HomPage title={item.title} images={item.images} price={item.price} id={0} />)}
+
+
+
+
+
+
+
+
+
+
+
+    </>
   );
 }
 
